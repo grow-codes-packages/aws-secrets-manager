@@ -1,0 +1,75 @@
+# AWS Secrets Manager SDK test fixture (GRO-1370) - sdk-kit SPEC section 8.
+#
+# AWS Secrets Manager is a managed service with no self-hostable image, so the
+# real-service test runs against the Moto AWS emulator (Apache-2.0, no account,
+# no licence token). Moto is test-only: Grow stacks use the real managed service
+# (stack catalog entry `aws-secrets-manager`, hosting cloud_managed, no image).
+#
+# Moto runs with IAM authentication ENABLED (INITIAL_NO_AUTH_ACTION_COUNT=3):
+# the first three AWS actions are unauthenticated so the bootstrap can create an
+# admin IAM user and its access key; every later request must be SigV4 signed
+# with a key that exists in Moto's IAM, and is authorised against IAM policies.
+# That gives real AuthenticationError / PermissionDeniedError round trips.
+#
+# No host ports are published. Test containers reach the emulator at
+#   GROW_AWS_SECRETS_MANAGER_URL=http://aws-secrets-manager:5000
+# and read credentials/region/fixture names from /bootstrap/env (volume `bootstrap`).
+#
+# Run: docker compose -p <unique> -f compose.service.yml up -d --wait aws-secrets-manager
+#      docker compose -p <unique> -f compose.service.yml run --rm bootstrap
+#      ... tests ...
+#      docker compose -p <unique> -f compose.service.yml down -v   (always)
+
+services:
+  service:   # service under test (harness contract); reachable as `aws-secrets-manager`
+    image: motoserver/moto:5.2.4@sha256:120b1589c6df7e35d2092935f6ff724486bb2c4189d0e36ce795baba1400ffd2
+    networks:
+      default:
+        aliases: [aws-secrets-manager]
+    environment:
+      # First 3 AWS actions unauthenticated (bootstrap: CreateUser, PutUserPolicy, CreateAccessKey);
+      # all later requests need a SigV4 signature from a Moto IAM access key.
+      INITIAL_NO_AUTH_ACTION_COUNT: "3"
+      MOTO_PORT: "5000"
+      TZ: UTC
+    healthcheck:
+      # /moto-api/ is Moto's dashboard endpoint; it is not an AWS action and does not
+      # consume INITIAL_NO_AUTH_ACTION_COUNT.
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:5000/moto-api/"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 2s
+    mem_limit: 512m
+
+  bootstrap:
+    image: curlimages/curl:8.23.0
+    user: "0:0" # the named volume is root-owned; env file is chmod 0644 so any test uid can read it
+    depends_on:
+      service:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/scripts/bootstrap.sh"]
+    environment:
+      ASM_URL: http://aws-secrets-manager:5000
+      ASM_REGION: us-east-1
+      BOOTSTRAP_DIR: /bootstrap
+    volumes:
+      - ./bootstrap:/scripts:ro
+      - bootstrap:/bootstrap
+    healthcheck:
+      test: ["CMD", "test", "-s", "/bootstrap/env"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    restart: "no"
+
+  # Template-added services follow this shape (shown for reference, not started here):
+  # test-<lang>:
+  #   profiles: ["<lang>"]
+  #   build: { context: .., dockerfile: docker/Dockerfile.<lang> }
+  #   depends_on: { bootstrap: { condition: service_completed_successfully } }
+  #   environment: { GROW_AWS_SECRETS_MANAGER_URL: "http://aws-secrets-manager:5000" }
+  #   volumes: [ "bootstrap:/bootstrap:ro" ]
+
+volumes:
+  bootstrap:
