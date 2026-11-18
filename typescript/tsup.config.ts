@@ -12,7 +12,8 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  splitting: false,
+  // Shared chunks keep one copy of every class across "." and "./testing" (instanceof works).
+  splitting: true,
   treeshake: true,
   shims: true,
 });
