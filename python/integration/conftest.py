@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import contextlib
 import os
-from collections.abc import Iterator
+import secrets
+from collections.abc import Iterable, Iterator
 from pathlib import Path
 
 import pytest
@@ -25,12 +27,30 @@ def load_env() -> dict[str, str]:
     return env
 
 
+def uid(prefix: str = "py") -> str:
+    """A unique secret-name prefix for this run: ``py-<run>-<random>``."""
+    run = "".join(ch for ch in os.environ.get("GROW_TEST_RUN_ID", "local") if ch.isalnum())
+    return f"{prefix}-{run[:8].lower()}-{secrets.token_hex(4)}"
+
+
+def purge(client: sdk.AwsSecretsManagerClient, names: Iterable[str]) -> None:
+    """Force-deletes secrets a test created (missing ones are ignored)."""
+    for name in names:
+        with contextlib.suppress(sdk.AwsSecretsManagerError):
+            client.delete_secret(name, force_delete_without_recovery=True)
+
+
 @pytest.fixture(scope="session")
 def env() -> dict[str, str]:
     values = load_env()
     if not values.get(URL_VAR):
         pytest.skip(f"{URL_VAR} is not set (run through docker/compose.yml)")
     return values
+
+
+@pytest.fixture(scope="session")
+def is_moto(env: dict[str, str]) -> bool:
+    return env.get("GROW_TEST_EMULATOR") == "moto"
 
 
 @pytest.fixture

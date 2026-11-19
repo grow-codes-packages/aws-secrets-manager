@@ -24,10 +24,8 @@ async fn client_round_trip() {
     let health = c.health().await.expect("health");
     assert!(health.healthy, "service not healthy: {health:?}");
     c.ping().await.expect("authenticated ping");
-    match c.server_version().await {
-        Ok(v) => assert!(!v.is_empty()),
-        Err(e) => assert_eq!(e.code(), ErrorCode::Unsupported, "{e}"),
-    }
+    let e = c.server_version().await.unwrap_err();
+    assert_eq!(e.code(), ErrorCode::Unsupported, "{e}");
     c.close().await;
     c.close().await;
 }
@@ -38,7 +36,14 @@ fn blocking_round_trip() {
     let c = BlockingClient::from_env().expect("client");
     assert!(c.health().expect("health").healthy);
     c.ping().expect("ping");
+    let seed = std::env::var("GROW_TEST_SEED_JSON_SECRET").expect("seed");
+    let v = c
+        .get_secret_value(&seed, Default::default())
+        .expect("seed value");
+    assert!(v.value.reveal().unwrap().contains("seed-user"));
+    assert!(!c.list_secrets(Default::default()).expect("list").is_empty());
     c.close();
+    assert_eq!(c.ping().unwrap_err().code(), ErrorCode::Cancelled);
 }
 
 #[tokio::test]
@@ -46,8 +51,9 @@ async fn conformance() {
     load_bootstrap_env();
     #[allow(unused_mut)]
     let mut runner = ConformanceRunner::new(conformance_dir())
-        // Declare what the service supports; justify every skip in docs/compatibility.md.
-        .capabilities(["version", "write", "delete", "versions", "query"])
+        // AWS Secrets Manager: writes, VersionId versions and deletes. No server version
+        // (serverVersion is UNSUPPORTED), so `version` is not declared (docs/compatibility.md).
+        .capabilities(sdk::AwsSecretsManagerSecretsProvider::CAPABILITIES)
         .handler(CoreHandler::new(Client::from_env));
     if let Some(provider) = secrets_provider(&client()) {
         let handler = sdk::testing::SecretsHandler::new(move || provider.clone());
@@ -58,8 +64,7 @@ async fn conformance() {
     report.assert_success();
 }
 
-/// The service's `SecretsProvider` for the `secrets` scenarios. Return it once the service
-/// module exists (e.g. `Some(Arc::new(client.kv()))`); `None` leaves them unregistered.
-fn secrets_provider(_client: &Client) -> Option<std::sync::Arc<dyn sdk::secrets::SecretsProvider>> {
-    None
+/// The service's `SecretsProvider` for the `secrets` scenarios.
+fn secrets_provider(client: &Client) -> Option<std::sync::Arc<dyn sdk::secrets::SecretsProvider>> {
+    Some(std::sync::Arc::new(client.secrets()))
 }

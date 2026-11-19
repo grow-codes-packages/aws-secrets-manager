@@ -111,7 +111,13 @@ def fast_retry(**kw: Any) -> sdk.RetryPolicy:
 
 
 def make_config(url: str, **kw: Any) -> sdk.AwsSecretsManagerConfig:
+    """A config for ``url``; ``token=`` (used by the core tests) becomes the secret access key,
+    so it is one of the config's known secrets."""
     kw.setdefault("retry", fast_retry())
+    token = kw.pop("token", None)
+    kw.setdefault("region", "us-east-1")
+    kw.setdefault("access_key_id", "AKIAGROWTESTKEY00001")
+    kw.setdefault("secret_access_key", token or "grow-test-secret-key-0001")
     return sdk.AwsSecretsManagerConfig(url=url, **kw)
 
 

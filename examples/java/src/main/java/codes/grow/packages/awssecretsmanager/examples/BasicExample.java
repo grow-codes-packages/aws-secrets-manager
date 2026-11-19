@@ -16,7 +16,8 @@ public final class BasicExample {
    * @param args unused
    */
   public static void main(String[] args) {
-    // Reads GROW_AWS_SECRETS_MANAGER_URL, GROW_AWS_SECRETS_MANAGER_TOKEN, timeouts, TLS and proxy settings.
+    // Reads GROW_AWS_SECRETS_MANAGER_* and the standard AWS variables (AWS_REGION, AWS_ACCESS_KEY_ID,
+    // AWS_SECRET_ACCESS_KEY, AWS_PROFILE, AWS_ENDPOINT_URL_SECRETS_MANAGER) plus timeouts, TLS, proxy.
     try (var client = AwsSecretsManagerClient.fromEnv()) {
       HealthStatus health = client.health(); // never throws for an unreachable service
       System.out.println("health: " + health);
@@ -26,13 +27,13 @@ public final class BasicExample {
       try {
         System.out.println("ping: " + client.ping().toMillis() + " ms");
       } catch (AuthenticationException e) {
-        // messages never contain the token
+        // messages never contain credentials
         System.out.println("bad credentials: " + e.getMessage());
       }
       try {
         System.out.println("server version: " + client.serverVersion());
       } catch (UnsupportedException e) {
-        System.out.println("the server exposes no version");
+        System.out.println("AWS exposes no server version (API " + AwsSecretsManagerClient.API_VERSION + ")");
       }
     }
   }

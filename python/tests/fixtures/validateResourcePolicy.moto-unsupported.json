@@ -1,0 +1,25 @@
+{
+  "function": "validateResourcePolicy",
+  "case": "moto-unsupported",
+  "operation": "ValidateResourcePolicy",
+  "recordedWith": "motoserver/moto:5.2.4 (IAM auth on), raw AWS JSON 1.1 via curl --aws-sigv4",
+  "request": {
+    "method": "POST",
+    "path": "/",
+    "headers": {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": "secretsmanager.ValidateResourcePolicy"
+    },
+    "body": {
+      "ResourcePolicy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::123456789012:root\"},\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"*\"}]}"
+    }
+  },
+  "response": {
+    "status": 500,
+    "headers": {
+      "content-type": "text/html; charset=utf-8",
+      "content-length": "265"
+    },
+    "body": "<!doctype html>\n<html lang=en>\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>\n"
+  }
+}

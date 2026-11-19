@@ -281,7 +281,9 @@ func (vanishing) PutSecret(context.Context, string, []byte, awssecretsmanager.Se
 	return "", nil
 }
 
-func (vanishing) RemoveSecret(context.Context, string, awssecretsmanager.DeleteOptions) error { return nil }
+func (vanishing) RemoveSecret(context.Context, string, awssecretsmanager.DeleteOptions) error {
+	return nil
+}
 
 func (vanishing) FetchMetadata(context.Context, string, awssecretsmanager.GetOptions) (*awssecretsmanager.SecretMetadata, error) {
 	return nil, nil

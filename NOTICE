@@ -29,14 +29,14 @@ Trademarks
 
 This project is an independent, community-maintained client library. It is not
 affiliated with, endorsed or sponsored by Amazon.com, Inc. or its affiliates.
-AWS Secrets Manager is a trademark of Amazon.com, Inc. or its affiliates. All other product names, logos and
-brands are the property of their respective owners and are used for
-identification purposes only.
+Amazon Web Services, AWS and AWS Secrets Manager are trademarks of Amazon.com,
+Inc. or its affiliates. This project is not affiliated with or endorsed by AWS.
+All other product names, logos and brands are the property of their respective
+owners and are used for identification purposes only.
 
-The AWS Secrets Manager server itself is licensed separately by its owner:
-Proprietary managed service; AWS SDKs Apache-2.0.
-This SDK contains no AWS Secrets Manager server code; it talks to the service over its
-public network API.
+AWS Secrets Manager is a proprietary managed service of Amazon Web Services.
+This SDK contains no AWS service code; it calls the service's public API only
+through the official AWS SDKs listed below (Apache-2.0).
 
 -------------------------------------------------------------------------------
 Third-party attributions
@@ -53,6 +53,60 @@ CC0-1.0, MPL-2.0). The full dependency lists and their licences are produced by
   go/          Go modules              (go-licenses)
   python/      PyPI dependencies       (pip-licenses)
   java/        Maven dependencies      (license-maven-plugin)
+
+The Java package additionally depends on org.reactivestreams:reactive-streams
+(MIT-0, MIT No Attribution), a dependency of the AWS SDK for Java v2 core; MIT-0
+is on the allowlist of the Java licence check for this reason.
+
+AWS SDKs used at runtime (Apache License, Version 2.0; not modified, used as
+dependencies):
+
+  AWS SDK for JavaScript v3 (@aws-sdk/client-secrets-manager,
+  @aws-sdk/credential-providers and their @aws-sdk/* and @smithy/* packages)
+  -- TypeScript package
+    Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+    https://github.com/aws/aws-sdk-js-v3
+
+  AWS SDK for Rust (aws-sdk-secretsmanager, aws-config, aws-credential-types,
+  aws-smithy-* and related crates) -- Rust package
+    Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+    https://github.com/awslabs/aws-sdk-rust
+
+  AWS SDK for Go v2 (github.com/aws/aws-sdk-go-v2 incl. service/secretsmanager,
+  config, credentials; github.com/aws/smithy-go) -- Go package
+    AWS SDK for Go
+    Copyright 2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+    Copyright 2014-2015 Stripe, Inc.
+    https://github.com/aws/aws-sdk-go-v2
+
+  boto3 and botocore -- Python package
+    boto3
+    Copyright 2013-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+    Botocore
+    Copyright 2012-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+    (Botocore includes vendorized parts of requests, Copyright 2013 Kenneth
+    Reitz, Apache-2.0, and urllib3, MIT.)
+    https://github.com/boto/boto3  https://github.com/boto/botocore
+
+  aioboto3 and aiobotocore -- Python package, optional extra [async]
+    aioboto3: Terri Cain and contributors, https://github.com/terricain/aioboto3
+    aiobotocore: Nikolay Novik and contributors, https://github.com/aio-libs/aiobotocore
+
+  AWS SDK for Java 2.0 (software.amazon.awssdk: secretsmanager, sts and the SDK
+  core modules) -- Java package
+    AWS SDK for Java 2.0
+    Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+    This product includes software developed by
+    Amazon Technologies, Inc (http://www.amazon.com/).
+    https://github.com/aws/aws-sdk-java-v2
+
+Test-only tools (not distributed with any package):
+
+  Moto (motoserver/moto Docker image), the AWS service emulator used by the
+  Docker integration tests -- Apache License, Version 2.0,
+  author Steve Pulec and the Moto contributors (AUTHORS.md),
+  https://github.com/getmoto/moto. Moto is pulled as an image at test time; no
+  Moto code is copied into this repository.
 
 Code copied or adapted from other projects is listed below with its source,
 copyright and licence.

@@ -1,47 +1,49 @@
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { AwsSecretsManagerClient } from "../../src/client.js";
+import { AwsSecretsManagerSecretsProvider } from "../../src/index.js";
 import {
   type ConformanceOptions,
   conformanceCases,
   formatReport,
   runConformance,
 } from "../../src/testing/index.js";
-import { type MockServer, startServer } from "../helpers/server.js";
+import { type AwsMock, clientFor, fixture, startAws } from "../support/aws.js";
+import { type FakeAsm, startFakeAsm } from "../support/fake-asm.js";
 
 const scenariosDir = fileURLToPath(new URL("../../../conformance/scenarios/", import.meta.url));
-let server: MockServer;
+let server: AwsMock;
+let fake: FakeAsm;
 
 beforeAll(async () => {
-  server = await startServer((req) => {
-    if (req.url === "/health") return { status: 200, body: { status: "ok" } };
-    if (req.url === "/version") return { status: 200, body: { version: "0.0.1" } };
-    if (req.url === "/v1/ping") return { status: 200, body: {} };
-    return { status: 404 };
-  });
+  server = await startAws({ ListSecrets: fixture("ping.ok") });
+  fake = await startFakeAsm();
 });
 
 afterAll(async () => {
   await server.close();
+  await fake.close();
 });
 
 function options(): ConformanceOptions {
   return {
     scenariosDir,
-    categories: ["core"],
+    categories: ["core", "secrets"],
     factories: {
-      core: () => new AwsSecretsManagerClient({ url: server.url, token: "conformance-token" }),
+      core: () => clientFor(server),
+      secrets: () => clientFor(fake).secrets(),
     },
-    capabilities: { core: ["version"] },
+    // serverVersion is not supported by AWS (no "version" capability).
+    capabilities: { core: [], secrets: [...AwsSecretsManagerSecretsProvider.capabilities] },
   };
 }
 
-describe("conformance (core) against a local demo API", () => {
-  it("every core scenario passes", async () => {
+describe("conformance (core + secrets) against local AWS mocks", () => {
+  it("every scenario passes; only the serverVersion step is skipped", async () => {
     const report = await runConformance(options());
     expect(report.failed, formatReport(report)).toBe(0);
     expect(report.skipped).toBe(0);
     expect(report.results.map((r) => r.id)).toContain("core.health");
+    expect(report.results.map((r) => r.id)).toContain("secrets.roundtrip");
   });
 
   for (const c of conformanceCases(options())) {

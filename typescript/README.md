@@ -10,11 +10,14 @@ npm install @grow-codes/aws-secrets-manager
 ```ts
 import { AwsSecretsManagerClient } from "@grow-codes/aws-secrets-manager";
 
-// Reads GROW_AWS_SECRETS_MANAGER_URL, GROW_AWS_SECRETS_MANAGER_TOKEN, timeouts, TLS and proxy settings.
+// Reads GROW_AWS_SECRETS_MANAGER_* first, then AWS_REGION, AWS_PROFILE, AWS_ACCESS_KEY_ID … and the
+// AWS SDK default credential chain. Built on @aws-sdk/client-secrets-manager v3.
 const client = AwsSecretsManagerClient.fromEnv();
 try {
   console.log(await client.health()); // { healthy: true, status: "ok", details: {} }
   console.log(`ping: ${(await client.ping()).toFixed(1)} ms`);
+  const secret = await client.getSecretValue("prod/app/db"); // value prints as [REDACTED]
+  console.log(secret.versionId, await client.getJsonField("prod/app/db", "host"));
 } finally {
   await client.close();
 }

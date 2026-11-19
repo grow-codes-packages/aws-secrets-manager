@@ -71,6 +71,9 @@
     "prepack": "npm run build"
   },
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.1172.0",
+    "@aws-sdk/credential-providers": "^3.1172.0",
+    "@smithy/types": "^4.20.0",
     "undici": "^7.30.2"
   },
   "peerDependencies": {
