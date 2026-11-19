@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/grow-codes-packages/aws-secrets-manager/compare/python-v0.1.1...python-v0.1.2) (2026-11-19)
+
+
+### Dependencies
+
+* **python:** Update boto3 requirement from &lt;1.40.62,&gt;=1.40.46 to &gt;=1.40.46,&lt;1.44.2 in /python in the python group across 1 directory ([#11](https://github.com/grow-codes-packages/aws-secrets-manager/issues/11)) ([29db84f](https://github.com/grow-codes-packages/aws-secrets-manager/commit/29db84f7afb24659e009e23d939167096218c9de))
+
 ## [0.1.1](https://github.com/grow-codes-packages/aws-secrets-manager/compare/python-v0.1.0...python-v0.1.1) (2026-11-19)
 
 

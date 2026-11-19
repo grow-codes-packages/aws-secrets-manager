@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/grow-codes-packages/aws-secrets-manager/compare/rust-v0.1.1...rust-v0.1.2) (2026-11-19)
+
+
+### Dependencies
+
+* **rust:** Bump the rust group across 1 directory with 2 updates ([#9](https://github.com/grow-codes-packages/aws-secrets-manager/issues/9)) ([f166cbb](https://github.com/grow-codes-packages/aws-secrets-manager/commit/f166cbba354ea221e9eb69c691457d281a175d90))
+
 ## [0.1.1](https://github.com/grow-codes-packages/aws-secrets-manager/compare/rust-v0.1.0...rust-v0.1.1) (2026-11-19)
 
 
