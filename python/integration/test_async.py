@@ -27,7 +27,7 @@ def test_async_core(env: dict[str, str]) -> None:
                 await c.server_version()
         assert c.closed
         await c.aclose()
-        with pytest.raises(sdk.ConfigError):
+        with pytest.raises(sdk.CancelledError, match="client is closed"):
             await c.ping()
         async with async_core_client(
             env,

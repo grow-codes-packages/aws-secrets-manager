@@ -112,7 +112,7 @@ def test_health_raises_cancel_and_config(aws: AwsMock) -> None:
     with pytest.raises(sdk.CancelledError):
         c.health(cancel=token)
     c.close()
-    with pytest.raises(sdk.ConfigError, match="closed"):
+    with pytest.raises(sdk.CancelledError, match="closed"):
         c.health()
 
 
@@ -137,7 +137,7 @@ def test_close_is_idempotent_and_closes_owned_clients(aws: AwsMock) -> None:
     c.close()
     c.close()
     assert c.closed
-    with pytest.raises(sdk.ConfigError, match="client is closed"):
+    with pytest.raises(sdk.CancelledError, match="client is closed"):
         c.ping()
 
 

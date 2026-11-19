@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import codes.grow.packages.awssecretsmanager.AwsSecretsManagerClient;
 import codes.grow.packages.awssecretsmanager.core.AuthenticationException;
-import codes.grow.packages.awssecretsmanager.core.ConfigException;
+import codes.grow.packages.awssecretsmanager.core.CancelledException;
 import codes.grow.packages.awssecretsmanager.core.EnvReader;
 import codes.grow.packages.awssecretsmanager.core.HealthStatus;
 import codes.grow.packages.awssecretsmanager.core.PermissionDeniedException;
@@ -89,7 +89,7 @@ class ClientIntegrationTest {
     c.close();
     c.close();
     assertTrue(c.isClosed());
-    assertThrows(ConfigException.class, c::ping);
+    assertThrows(CancelledException.class, c::ping);
   }
 
   @Test

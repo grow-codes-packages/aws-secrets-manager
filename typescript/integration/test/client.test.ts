@@ -68,7 +68,7 @@ test("serverVersion is UNSUPPORTED; close is idempotent", async () => {
   assert.equal(API_VERSION, "2017-10-17");
   await c.close();
   await c.close();
-  await assert.rejects(c.ping(), { code: "CONFIG" });
+  await assert.rejects(c.ping(), { code: "CANCELLED" });
 });
 
 test("wraps a caller-supplied AWS SDK client", async () => {

@@ -150,11 +150,11 @@ class AwsSecretsManagerClientTest {
     c.close();
     assertThat(c.isClosed()).isTrue();
     assertThat(closedResource.get()).isTrue();
-    assertThatThrownBy(c::ping).isInstanceOf(ConfigException.class);
-    assertThatThrownBy(c::health).isInstanceOf(ConfigException.class);
-    assertThatThrownBy(c::serverVersion).isInstanceOf(ConfigException.class);
-    assertThatThrownBy(c::secrets).isInstanceOf(ConfigException.class);
-    assertThatThrownBy(() -> p.get("x")).isInstanceOf(ConfigException.class);
+    assertThatThrownBy(c::ping).isInstanceOf(CancelledException.class);
+    assertThatThrownBy(c::health).isInstanceOf(CancelledException.class);
+    assertThatThrownBy(c::serverVersion).isInstanceOf(CancelledException.class);
+    assertThatThrownBy(c::secrets).isInstanceOf(CancelledException.class);
+    assertThatThrownBy(() -> p.get("x")).isInstanceOf(CancelledException.class);
   }
 
   @Test

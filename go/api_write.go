@@ -173,7 +173,9 @@ func (c *Client) UpdateSecretVersionStage(ctx context.Context, id, stage string,
 }
 
 // DeleteSecret schedules a secret for deletion after the recovery window
-// (default Config.RecoveryWindowDays, 30 days) or deletes it immediately with
+// (RecoveryWindowDays; unset = the AWS default of 30 days, as in the other
+// languages; Config.RecoveryWindowDays applies to SecretsProvider.Delete) or
+// deletes it immediately with
 // ForceDeleteWithoutRecovery. AWS returns success for a forced delete of a
 // missing secret; a secret already scheduled for deletion is CONFLICT.
 func (c *Client) DeleteSecret(ctx context.Context, id string, opts *DeleteSecretOptions) (*DeleteSecretResult, error) {
@@ -195,8 +197,6 @@ func (c *Client) DeleteSecret(ctx context.Context, id string, opts *DeleteSecret
 		return nil, ValidationError(op, "recoveryWindowDays must be between 7 and 30")
 	case o.RecoveryWindowDays != 0:
 		in.RecoveryWindowInDays = aws.Int64(int64(o.RecoveryWindowDays))
-	default:
-		in.RecoveryWindowInDays = aws.Int64(int64(c.cfg.RecoveryWindowDays))
 	}
 	out, err := call(ctx, c, op, func(ctx context.Context) (*secretsmanager.DeleteSecretOutput, error) {
 		return c.api.DeleteSecret(ctx, in)

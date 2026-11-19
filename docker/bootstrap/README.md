@@ -22,7 +22,7 @@ Inside the container:
 
 ```
 # comment
-GROW_AWS_SECRETS_MANAGER_TOKEN=s.abcdef
+AWS_ACCESS_KEY_ID=AKIAEXAMPLE
 SOME_URL=http://service:5000/v1
 ```
 

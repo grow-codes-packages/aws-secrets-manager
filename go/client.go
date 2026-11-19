@@ -18,7 +18,7 @@ import (
 )
 
 // maxHealthTimeout bounds the health probe.
-const maxHealthTimeout = 10 * time.Second
+const maxHealthTimeout = 5 * time.Second
 
 // Client is the AWS Secrets Manager client, built on the AWS SDK for Go v2.
 // It is safe for concurrent use. Every method takes a context first; the
@@ -225,7 +225,7 @@ func (c *Client) Health(ctx context.Context) (HealthStatus, error) {
 	}
 	var e *Error
 	if !errors.As(err, &e) {
-		return HealthStatus{Healthy: false, Status: "unreachable", Details: map[string]string{"error": err.Error()}}, nil
+		return HealthStatus{Healthy: false, Status: "unreachable", Details: map[string]string{"error": string(ErrorCodeUnavailable)}}, nil
 	}
 	switch e.Code {
 	case ErrorCodeCancelled, ErrorCodeConfig:
@@ -236,12 +236,12 @@ func (c *Client) Health(ctx context.Context) (HealthStatus, error) {
 		return HealthStatus{Healthy: true, Status: "ok", Details: map[string]string{"auth": "failed", "code": string(e.Code)}}, nil
 	}
 	if e.HTTPStatus >= 500 {
-		return HealthStatus{Healthy: false, Status: "unhealthy", Details: map[string]string{"httpStatus": strconv.Itoa(e.HTTPStatus), "error": e.Message}}, nil
+		return HealthStatus{Healthy: false, Status: "unhealthy", Details: map[string]string{"httpStatus": strconv.Itoa(e.HTTPStatus), "error": string(e.Code)}}, nil
 	}
 	if e.HTTPStatus > 0 {
 		return HealthStatus{Healthy: true, Status: "ok", Details: map[string]string{"httpStatus": strconv.Itoa(e.HTTPStatus), "code": string(e.Code)}}, nil
 	}
-	return HealthStatus{Healthy: false, Status: "unreachable", Details: map[string]string{"error": e.Message}}, nil
+	return HealthStatus{Healthy: false, Status: "unreachable", Details: map[string]string{"error": string(e.Code)}}, nil
 }
 
 // Ping makes a signed ListSecrets (MaxResults 1) round trip and returns its

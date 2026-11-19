@@ -338,8 +338,7 @@ public final class AwsSecretsManagerClient implements AutoCloseable {
    * {@code unreachable} on network errors.
    *
    * @return the health status
-   * @throws CancelledException when interrupted
-   * @throws ConfigException when the client is closed
+   * @throws CancelledException when interrupted or when the client is closed
    */
   public HealthStatus health() {
     Duration probe =
@@ -449,7 +448,7 @@ public final class AwsSecretsManagerClient implements AutoCloseable {
   /**
    * Stops the watchers of every provider created by {@link #secrets()}, closes registered resources
    * and the SDK client this instance built (never a caller-supplied one). Idempotent; later calls
-   * fail with {@link ConfigException}.
+   * fail with {@link CancelledException}.
    */
   @Override
   public void close() {
@@ -1547,7 +1546,7 @@ public final class AwsSecretsManagerClient implements AutoCloseable {
 
   private void ensureOpen(String operation) {
     if (closed.get()) {
-      throw new ConfigException(operation + ": client is closed");
+      throw new CancelledException(operation + ": client is closed");
     }
   }
 

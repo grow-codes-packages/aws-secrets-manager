@@ -56,7 +56,7 @@ async def test_async_core(aws: AwsMock) -> None:
             await c.server_version()
     assert c.closed
     await c.close()
-    with pytest.raises(sdk.ConfigError, match="closed"):
+    with pytest.raises(sdk.CancelledError, match="closed"):
         await c.ping()
     aws.enqueue("ListSecrets", reply("ping.auth-unknown-key"), aws_error("ThrottlingException"))
     async with aclient(aws.url) as c:

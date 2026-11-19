@@ -210,6 +210,7 @@ func (c *Client) DescribeSecret(ctx context.Context, id string) (*SecretDescript
 		DeletedDate: tm(out.DeletedDate), NextRotationDate: tm(out.NextRotationDate), CreatedDate: tm(out.CreatedDate),
 		Tags: tagsFromSDK(out.Tags), VersionIDsToStages: stagesMap(out.VersionIdsToStages),
 		PrimaryRegion: str(out.PrimaryRegion), OwningService: str(out.OwningService),
+		ReplicationStatus: replicationFromSDK(out.ReplicationStatus),
 	}, nil
 }
 
@@ -322,7 +323,7 @@ func Collect[T any](seq iter.Seq2[T, error]) ([]T, error) {
 // GetJSONField reads a secret, parses its SecretString as a JSON object and
 // returns the value of field (a top-level key, or a dot path such as
 // "db.host" when no top-level key matches). ok is false when the field is
-// absent. Binary or non-JSON secrets are VALIDATION errors; a missing secret is
+// absent or JSON null. Binary or non-JSON secrets are VALIDATION errors; a missing secret is
 // NOT_FOUND.
 func (c *Client) GetJSONField(ctx context.Context, id, field string, opts *GetSecretValueOptions) (value any, ok bool, err error) {
 	op := opName("getJsonField", id)
@@ -346,7 +347,7 @@ func (c *Client) GetJSONField(ctx context.Context, id, field string, opts *GetSe
 
 func lookupField(doc map[string]any, field string) (any, bool) {
 	if v, ok := doc[field]; ok {
-		return v, true
+		return v, v != nil // JSON null counts as absent (same as the other languages)
 	}
 	var cur any = doc
 	for part := range strings.SplitSeq(field, ".") {
@@ -360,7 +361,7 @@ func lookupField(doc map[string]any, field string) (any, bool) {
 		}
 		cur = v
 	}
-	return cur, true
+	return cur, cur != nil
 }
 
 // pageSize converts a validated page size; values above 100 (the largest AWS

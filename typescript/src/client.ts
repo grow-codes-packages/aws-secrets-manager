@@ -38,7 +38,6 @@ import { AwsSecretsManagerConfig, type AwsSecretsManagerConfigOptions } from "./
 import {
   type AwsSecretsManagerError,
   CancelledError,
-  ConfigError,
   ErrorCode,
   type HealthStatus,
   Secret,
@@ -292,7 +291,7 @@ export class AwsSecretsManagerClient {
    * Liveness: a signed `ListSecrets {MaxResults: 1}` with a short timeout and no retries.
    * `ok` when AWS answers (also when the credentials are rejected: `details.auth = "failed"`),
    * `degraded` when throttled, `unhealthy` on HTTP 5xx, `unreachable` on network errors.
-   * Throws only `CancelledError` and `ConfigError`.
+   * Throws only `CancelledError` (also on a closed client) and `ConfigError`.
    */
   async health(options: CallOptions = {}): Promise<HealthStatus> {
     try {
@@ -949,7 +948,7 @@ export class AwsSecretsManagerClient {
     command: CommandLike<Out>,
     options: SendOptions = {},
   ): Promise<Out> {
-    if (this.#closed) throw new ConfigError(`${operation}: client is closed`);
+    if (this.#closed) throw new CancelledError(`${operation}: client is closed`);
     const signal = options.signal;
     if (signal?.aborted === true) throw new CancelledError(`${operation}: cancelled`);
     const total = new AbortController();

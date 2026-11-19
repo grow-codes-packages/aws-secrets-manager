@@ -376,7 +376,7 @@ describe("AwsSecretsManagerClient core", () => {
       code: "CANCELLED",
     });
     await client.close();
-    await expect(client.health()).rejects.toMatchObject({ code: "CONFIG" });
+    await expect(client.health()).rejects.toMatchObject({ code: "CANCELLED" });
   });
 
   it("core.close.idempotent: close twice is safe", async () => {
@@ -390,7 +390,7 @@ describe("AwsSecretsManagerClient core", () => {
     await client.close();
     expect(client.closed).toBe(true);
     expect(handle.stopped).toBe(true);
-    await expect(client.ping()).rejects.toMatchObject({ code: "CONFIG" });
+    await expect(client.ping()).rejects.toMatchObject({ code: "CANCELLED" });
   });
 
   it("wraps a caller-supplied SDK client and never destroys it", async () => {

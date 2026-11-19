@@ -35,7 +35,7 @@ def test_server_version_unsupported_and_close_idempotent(env: dict[str, str]) ->
     c.close()
     c.close()
     assert c.closed
-    with pytest.raises(sdk.ConfigError):
+    with pytest.raises(sdk.CancelledError, match="client is closed"):
         c.ping()
 
 

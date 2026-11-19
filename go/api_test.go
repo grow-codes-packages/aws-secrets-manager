@@ -97,6 +97,13 @@ func TestGetJSONField(t *testing.T) {
 	if _, ok, _ := nested.GetJSONField(t.Context(), "n", "db.port", nil); ok {
 		t.Fatal("missing nested")
 	}
+	nulls := newAWSMock(t).json("GetSecretValue", 200, `{"Name":"n","VersionId":"v","SecretString":"{\"z\":null,\"db\":{\"n\":null}}"}`).client(nil)
+	if _, ok, err := nulls.GetJSONField(t.Context(), "n", "z", nil); ok || err != nil {
+		t.Fatal("top-level null counts as absent")
+	}
+	if _, ok, err := nulls.GetJSONField(t.Context(), "n", "db.n", nil); ok || err != nil {
+		t.Fatal("nested null counts as absent")
+	}
 	bin := newAWSMock(t).serve("getSecretValue.ok-binary").client(nil)
 	if _, _, err := bin.GetJSONField(t.Context(), "x", "a", nil); !errors.Is(err, ErrValidation) {
 		t.Fatalf("binary: %v", err)
@@ -199,9 +206,10 @@ func TestDescribeAndList(t *testing.T) {
 		if _, err := newAWSMock(t).serve("describeSecret.not-found").client(nil).DescribeSecret(t.Context(), "x"); !errors.Is(err, ErrNotFound) {
 			t.Fatal(err)
 		}
-		rot := newAWSMock(t).json("DescribeSecret", 200, `{"Name":"r","RotationEnabled":true,"RotationLambdaARN":"arn:l","RotationRules":{"AutomaticallyAfterDays":7,"Duration":"2h"},"NextRotationDate":1795033096,"DeletedDate":1795033096}`).client(nil)
+		rot := newAWSMock(t).json("DescribeSecret", 200, `{"Name":"r","RotationEnabled":true,"RotationLambdaARN":"arn:l","RotationRules":{"AutomaticallyAfterDays":7,"Duration":"2h"},"NextRotationDate":1795033096,"DeletedDate":1795033096,"ReplicationStatus":[{"Region":"eu-west-1","Status":"InSync","KmsKeyId":"k","LastAccessedDate":1795033096}]}`).client(nil)
 		d, err = rot.DescribeSecret(t.Context(), "r")
-		if err != nil || !d.RotationEnabled || d.RotationRules.AutomaticallyAfterDays != 7 || d.RotationRules.Duration != "2h" || !d.PendingDeletion() || d.CurrentVersionID() != "" {
+		if err != nil || !d.RotationEnabled || d.RotationRules.AutomaticallyAfterDays != 7 || d.RotationRules.Duration != "2h" || !d.PendingDeletion() || d.CurrentVersionID() != "" ||
+			len(d.ReplicationStatus) != 1 || d.ReplicationStatus[0].Region != "eu-west-1" || d.ReplicationStatus[0].Status != "InSync" || d.ReplicationStatus[0].LastAccessedDate.IsZero() {
 			t.Fatalf("%+v %v", d, err)
 		}
 		if _, err := rot.DescribeSecret(t.Context(), ""); !errors.Is(err, ErrValidation) {
@@ -403,7 +411,7 @@ func TestWrites(t *testing.T) {
 		if err != nil || res.DeletionDate.IsZero() || m.body("DeleteSecret", 0)["RecoveryWindowInDays"] != float64(7) {
 			t.Fatalf("%+v %v", res, err)
 		}
-		if _, err := c.DeleteSecret(t.Context(), "x", nil); err != nil || m.body("DeleteSecret", 1)["RecoveryWindowInDays"] != float64(30) {
+		if _, err := c.DeleteSecret(t.Context(), "x", nil); err != nil || m.body("DeleteSecret", 1)["RecoveryWindowInDays"] != nil {
 			t.Fatalf("default window: %v", m.body("DeleteSecret", 1))
 		}
 		m = newAWSMock(t).serve("deleteSecret.force")

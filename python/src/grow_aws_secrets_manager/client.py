@@ -182,8 +182,8 @@ class _Base:
             call_hook(hooks.on_error, info)
         return mapped
 
-    def _closed_error(self, call: ops.Call) -> ConfigError:
-        return ConfigError(f"{call.label}: client is closed")
+    def _closed_error(self, call: ops.Call) -> CancelledError:
+        return CancelledError(f"{call.label}: client is closed")
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}(config={self.config!r})"
@@ -297,8 +297,8 @@ class AwsSecretsManagerClient(_Base):
 
         ``ok`` when AWS answers (also when the credentials are rejected:
         ``details["auth"] == "failed"``), ``degraded`` when throttled, ``unhealthy`` on HTTP 5xx,
-        ``unreachable`` on network errors and timeouts. Raises only :class:`CancelledError` and
-        :class:`ConfigError`.
+        ``unreachable`` on network errors and timeouts. Raises only :class:`CancelledError` (also
+        on a closed client) and :class:`ConfigError`.
         """
         try:
             self._invoke(ops.health(), cancel, health=True)

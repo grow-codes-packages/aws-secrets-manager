@@ -110,6 +110,29 @@ type SecretDescription struct {
 	VersionIDsToStages map[string][]string `json:"versionIdsToStages"`
 	PrimaryRegion      string              `json:"primaryRegion,omitempty"`
 	OwningService      string              `json:"owningService,omitempty"`
+	// ReplicationStatus lists the replica regions (DescribeSecret only; empty
+	// for list entries).
+	ReplicationStatus []ReplicationStatus `json:"replicationStatus"`
+}
+
+// ReplicationStatus is the replication state of one replica region.
+type ReplicationStatus struct {
+	Region           string    `json:"region,omitempty"`
+	KmsKeyID         string    `json:"kmsKeyId,omitempty"`
+	Status           string    `json:"status,omitempty"`
+	StatusMessage    string    `json:"statusMessage,omitempty"`
+	LastAccessedDate time.Time `json:"lastAccessedDate,omitzero"`
+}
+
+func replicationFromSDK(in []types.ReplicationStatusType) []ReplicationStatus {
+	out := make([]ReplicationStatus, 0, len(in))
+	for _, r := range in {
+		out = append(out, ReplicationStatus{
+			Region: str(r.Region), KmsKeyID: str(r.KmsKeyId), Status: string(r.Status),
+			StatusMessage: str(r.StatusMessage), LastAccessedDate: tm(r.LastAccessedDate),
+		})
+	}
+	return out
 }
 
 // CurrentVersionID returns the version id labelled AWSCURRENT ("" when none).
@@ -319,6 +342,7 @@ func describeFromList(l types.SecretListEntry) SecretDescription {
 		DeletedDate: tm(l.DeletedDate), NextRotationDate: tm(l.NextRotationDate), CreatedDate: tm(l.CreatedDate),
 		Tags: tagsFromSDK(l.Tags), VersionIDsToStages: stagesMap(l.SecretVersionsToStages),
 		PrimaryRegion: str(l.PrimaryRegion), OwningService: str(l.OwningService),
+		ReplicationStatus: []ReplicationStatus{},
 	}
 }
 

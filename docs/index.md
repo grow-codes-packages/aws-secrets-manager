@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](license.md)
 
 One API for **AWS Secrets Manager** in five languages: TypeScript, Rust, Go, Python and Java. Every package
-has the same functions, options, defaults, error codes and behaviour, tested against a real
+has the same functions, options, defaults, error codes and behaviour, tested against the AWS API emulator
 `motoserver/moto:5.2.4` in Docker.
 
 | Language | Package | Coverage |
@@ -18,16 +18,23 @@ has the same functions, options, defaults, error codes and behaviour, tested aga
 
 ## What you get
 
-- **Client** with health, authenticated ping and server version ([Client](client.md)).
-- **Configuration** from code or `GROW_AWS_SECRETS_MANAGER_*` / vendor environment variables, immutable
-  and validated ([Configuration](configuration.md)).
-- **Retries** with full-jitter backoff and `Retry-After`, connect/request/total timeouts and
-  cancellation in every language.
-- **Typed errors** with one set of codes across languages ([Error handling](errors.md)).
-- **Redaction everywhere**: credentials never appear in errors, logs, hooks or `toString`
-  ([Redaction](redaction.md)).
-- **Secrets**: typed getters, bulk reads, `loadEnv`, watch and a TTL cache ([Secrets](secrets.md)).
-- **Service functions** for the AWS Secrets Manager API ([Functions](functions.md)).
+- **Built on the official AWS SDKs** (`@aws-sdk/client-secrets-manager`, `aws-sdk-secretsmanager`,
+  AWS SDK for Go v2, `boto3` / `aioboto3`, AWS SDK for Java v2): SigV4, the standard credential
+  chain, SSO, IAM roles and an assume-role helper, with the Grow configuration mapped onto them
+  ([Client setup](functions/client-setup.md)).
+- **The whole AWS Secrets Manager API**: read, batch read, describe and list with auto-pagination,
+  create, new versions, stage labels, delete/restore, tags, resource policies, rotation, random
+  passwords and JSON fields ([Functions](functions.md)).
+- **AWS caching-client semantics**: a version-stage aware cache (TTL 1 h, 1 024 entries) that
+  checks `DescribeSecret` before re-reading a value ([AWS secret cache](functions/secret-cache.md)).
+- **Secrets**: the portable provider API shared by every Grow Codes secrets SDK — typed getters,
+  bulk reads, `loadEnv`, watch and a TTL cache ([Secrets over AWS](functions/secrets-provider.md)).
+- **Configuration** from code or `GROW_AWS_SECRETS_MANAGER_*` / standard `AWS_*` environment
+  variables, immutable and validated ([Configuration](configuration.md)).
+- **Typed errors** mapped by AWS error code to one set of codes across languages
+  ([Error handling](errors.md)); timeouts, retries and cancellation in every language.
+- **Redaction everywhere**: credentials and secret values never appear in errors, logs, hooks or
+  `toString` ([Redaction](redaction.md)).
 
 Start with [Install](install.md) and the [Quickstart](quickstart.md).
 
