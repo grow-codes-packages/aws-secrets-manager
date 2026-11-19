@@ -1,0 +1,27 @@
+{
+  "function": "ping",
+  "case": "auth-bad-signature",
+  "operation": "ListSecrets",
+  "recordedWith": "motoserver/moto:5.2.4 (IAM auth on), raw AWS JSON 1.1 via curl --aws-sigv4",
+  "request": {
+    "method": "POST",
+    "path": "/",
+    "headers": {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": "secretsmanager.ListSecrets"
+    },
+    "body": {
+      "MaxResults": 1
+    }
+  },
+  "response": {
+    "status": 403,
+    "headers": {
+      "status": "403",
+      "x-amzn-requestid": "tsje8X5SgEoonSutH216nW2Iq3Luy2YOnRhvq1hoKOXAAsb4QxHy",
+      "content-type": "text/html; charset=utf-8",
+      "content-length": "352"
+    },
+    "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ErrorResponse><Errors><Error><Code>SignatureDoesNotMatch</Code><Message>The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. Consult the service documentation for details.</Message><Type>Sender</Type></Error></Errors></ErrorResponse>"
+  }
+}

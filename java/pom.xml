@@ -57,6 +57,7 @@
 
     <!-- runtime -->
     <jackson.version>2.22.4</jackson.version>
+    <awssdk.version>2.57.13</awssdk.version>
 
     <!-- test -->
     <junit.version>5.14.4</junit.version>
@@ -97,6 +98,13 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${awssdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
         <version>${junit.version}</version>
@@ -113,7 +121,53 @@
       <artifactId>jackson-databind</artifactId>
     </dependency>
 
+    <!-- AWS SDK for Java v2 (SPEC section 2.3 "Cloud SDK services"): Secrets Manager and STS for the
+         assume-role helper. The package plugs its own java.net.http based SdkHttpClient in (TLS,
+         proxy, timeouts from the Grow config), so no Netty or Apache HTTP client is pulled in. -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>secretsmanager</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>netty-nio-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>apache-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>apache5-client</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>sts</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>netty-nio-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>apache-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>apache5-client</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
+    <!-- Default HTTP implementation for AWS SDK clients that callers build themselves and pass in
+         (withSdkClient); the clients this package builds use its own HTTP client. -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>url-connection-client</artifactId>
+      <scope>runtime</scope>
+    </dependency>
 
     <!-- JUnit 5 helper in the testing package (JUnitConformance); tests bring JUnit themselves -->
     <dependency>
@@ -336,7 +390,9 @@
         </executions>
       </plugin>
 
-      <!-- Licence allowlist for runtime dependencies (SPEC section 7). Run with `make license`. -->
+      <!-- Licence allowlist for runtime dependencies (SPEC section 7). Run with `make license`.
+           MIT-0 (MIT No Attribution) is added for org.reactivestreams:reactive-streams, a dependency
+           of the AWS SDK core. -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
@@ -345,7 +401,7 @@
           <excludedScopes>test,provided,system</excludedScopes>
           <failOnMissing>true</failOnMissing>
           <failOnBlacklist>true</failOnBlacklist>
-          <includedLicenses>Apache-2.0|MIT|BSD-2-Clause|BSD-3-Clause|ISC|Zlib|Unicode-3.0|Unicode-DFS-2016|0BSD|CC0-1.0|MPL-2.0</includedLicenses>
+          <includedLicenses>Apache-2.0|MIT|MIT-0|BSD-2-Clause|BSD-3-Clause|ISC|Zlib|Unicode-3.0|Unicode-DFS-2016|0BSD|CC0-1.0|MPL-2.0</includedLicenses>
           <licenseMerges>
             <licenseMerge>Apache-2.0|Apache License, Version 2.0|The Apache License, Version 2.0|The Apache Software License, Version 2.0|Apache License 2.0|Apache 2.0|Apache 2|Apache-2.0 License|Apache Software License - Version 2.0|ASL 2.0|ASF 2.0</licenseMerge>
             <licenseMerge>MIT|MIT License|The MIT License|The MIT License (MIT)</licenseMerge>

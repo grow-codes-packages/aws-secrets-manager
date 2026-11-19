@@ -1,0 +1,27 @@
+{
+  "function": "ping",
+  "case": "auth-unknown-key",
+  "operation": "ListSecrets",
+  "recordedWith": "motoserver/moto:5.2.4 (IAM auth on), raw AWS JSON 1.1 via curl --aws-sigv4",
+  "request": {
+    "method": "POST",
+    "path": "/",
+    "headers": {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": "secretsmanager.ListSecrets"
+    },
+    "body": {
+      "MaxResults": 1
+    }
+  },
+  "response": {
+    "status": 403,
+    "headers": {
+      "status": "403",
+      "x-amzn-requestid": "ZaoflKOuQJOvRR4FaVq3zdNpHUiwQf9SaUDd9UMtw318I7WW7MAs",
+      "content-type": "text/html; charset=utf-8",
+      "content-length": "227"
+    },
+    "body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<ErrorResponse><Errors><Error><Code>InvalidClientTokenId</Code><Message>The security token included in the request is invalid.</Message><Type>Sender</Type></Error></Errors></ErrorResponse>"
+  }
+}
