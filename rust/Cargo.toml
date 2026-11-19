@@ -13,7 +13,7 @@ homepage = "https://grow-codes-packages.github.io/aws-secrets-manager/"
 repository = "https://github.com/grow-codes-packages/aws-secrets-manager"
 documentation = "https://docs.rs/grow-aws-secrets-manager"
 readme = "README.md"
-keywords = ["grow-codes", "sdk", "client"]
+keywords = ["grow-codes", "sdk", "aws", "secrets-manager", "secrets"]
 categories = ["api-bindings", "asynchronous"]
 include = ["src/**/*.rs", "Cargo.toml", "README.md", "LICENSE", "NOTICE"]
 
@@ -29,6 +29,13 @@ testing = []
 
 [dependencies]
 async-trait = "0.1.80"
+# Official AWS SDK (SPEC §2.3 "Cloud SDK services"). No default features: the HTTP client is the
+# crate's own reqwest connector (TLS, proxy, hooks), so no second TLS stack is pulled in.
+aws-config = { version = "1.5", default-features = false, features = ["rt-tokio", "behavior-version-latest", "sso", "credentials-process"] }
+aws-credential-types = "1.2"
+aws-sdk-secretsmanager = { version = "1.60", default-features = false, features = ["rt-tokio", "behavior-version-latest"] }
+aws-smithy-runtime-api = { version = "1.7", features = ["client", "http-1x"] }
+aws-smithy-types = "1.2"
 bytes = "1.6"
 futures = { version = "0.3.30", default-features = false, features = ["std", "async-await"] }
 httpdate = "1.0"

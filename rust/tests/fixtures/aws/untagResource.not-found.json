@@ -1,0 +1,34 @@
+{
+  "function": "untagResource",
+  "case": "not-found",
+  "operation": "UntagResource",
+  "recordedWith": "motoserver/moto:5.2.4 (IAM auth on), raw AWS JSON 1.1 via curl --aws-sigv4",
+  "request": {
+    "method": "POST",
+    "path": "/",
+    "headers": {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": "secretsmanager.UntagResource"
+    },
+    "body": {
+      "SecretId": "sdkv-0badc0de/missing",
+      "TagKeys": [
+        "a"
+      ]
+    }
+  },
+  "response": {
+    "status": 404,
+    "headers": {
+      "x-amzn-errortype": "ResourceNotFoundException",
+      "content-type": "application/json",
+      "status": "404",
+      "x-amzn-requestid": "p2s2MTlVMIgdZVbwnQn8Ccik9mlaOBLBGKToOFlYFQaE21SWvr3D",
+      "content-length": "102"
+    },
+    "body": {
+      "__type": "ResourceNotFoundException",
+      "message": "Secrets Manager can't find the specified secret."
+    }
+  }
+}

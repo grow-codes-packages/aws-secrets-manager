@@ -1,0 +1,30 @@
+{
+  "function": "getResourcePolicy",
+  "case": "ok",
+  "operation": "GetResourcePolicy",
+  "recordedWith": "motoserver/moto:5.2.4 (IAM auth on), raw AWS JSON 1.1 via curl --aws-sigv4",
+  "request": {
+    "method": "POST",
+    "path": "/",
+    "headers": {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": "secretsmanager.GetResourcePolicy"
+    },
+    "body": {
+      "SecretId": "sdkv-0badc0de/app/db"
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "x-amzn-requestid": "BsDbUK20oe2Mkj91nXav06YGlKWwpCNIa36aU6aUOTUaRhFPuIsl",
+      "content-type": "text/html; charset=utf-8",
+      "content-length": "335"
+    },
+    "body": {
+      "ARN": "arn:aws:secretsmanager:us-east-1:123456789012:secret:sdkv-0badc0de/app/db-meSWom",
+      "Name": "sdkv-0badc0de/app/db",
+      "ResourcePolicy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:aws:iam::123456789012:root\"},\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"*\"}]}"
+    }
+  }
+}
