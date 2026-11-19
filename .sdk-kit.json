@@ -81,7 +81,7 @@
     },
     {
       "path": ".github/workflows/release.yml",
-      "sha256": "61fe5519d4b2e6f27156d1f477015fae740c0dde932316a11b742b425047c3ba",
+      "sha256": "263ab775dc3fca7f3ad590294d4a19a34c7343b8deddc9f68bc9fc5c53bcea4f",
       "generated": true
     },
     {
@@ -91,7 +91,7 @@
     },
     {
       "path": ".release-please-manifest.json",
-      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "sha256": "8bb8eecb8fb9f763e2a20886e5ed9cc77e6c8f2ead86f3ef0291e54d9ae75250",
       "generated": false
     },
     {
@@ -235,7 +235,7 @@
     },
     {
       "path": "docker/compose.yml",
-      "sha256": "253c4707e31cd5fa61c363f8cc9b1043e7581e4442bf96cd24fb13b9ae79b47e",
+      "sha256": "1fa22e1c94e474bee8a5df50af9c4c43f3afdd1c8c3288dee69b565d16c27ca6",
       "generated": true
     },
     {
@@ -605,7 +605,7 @@
     },
     {
       "path": "go/secrets_provider_test.go",
-      "sha256": "ac147900048b3ac5226bf9dd070215a2924a7a764efc235e97389b1a30e3d1eb",
+      "sha256": "9582641fadbeb286d9c9f9aefcf5bef0cd8ae764a100c9753ca389f65b7b557d",
       "generated": true
     },
     {
@@ -670,7 +670,7 @@
     },
     {
       "path": "java/Makefile",
-      "sha256": "4a1ae0720a97d0687fa210cd7cbb56298e65ea51733fcf81c268ace315f31413",
+      "sha256": "770ca5fe6a9f3599aa26c2ac7b56ed4e78702fbe41f64bbb070f07541acd77ad",
       "generated": false
     },
     {
@@ -1100,7 +1100,7 @@
     },
     {
       "path": "python/Makefile",
-      "sha256": "392650d794e57e456f8a172ba68b625f5e664592e7aa6cfe2d823449f05abcff",
+      "sha256": "44dd70a7841bd1a19a4a51e11c2868c798036c23e5bbe6d18f1e53cf91ac09c3",
       "generated": false
     },
     {
@@ -1255,7 +1255,7 @@
     },
     {
       "path": "python/src/grow_aws_secrets_manager/_version.py",
-      "sha256": "326553d84c140a43dd807c7e7ffd9a77a0b48f004b8de216cf29e7959ca2ed0e",
+      "sha256": "a77fa54f51fdf50ebdb72c3a3172a1bc4dbc18af2125c9b46a337b7947d33a8e",
       "generated": false
     },
     {
@@ -1655,7 +1655,7 @@
     },
     {
       "path": "typescript/Makefile",
-      "sha256": "07cd7dfb7bad195472222f461aec761fbf14fd776df9ed15568e760065809ecd",
+      "sha256": "92bf76e29692c40546f0c3779cf379797cbbf953e96039f51de03803ed8b7c50",
       "generated": false
     },
     {
@@ -1895,7 +1895,7 @@
     },
     {
       "path": "typescript/test/core/transport.test.ts",
-      "sha256": "7c92646bcd5daf44149ce5774081c9a7071beef069d28c04c1138523b0e7df87",
+      "sha256": "0149ed327ffcabdf818c169049f1d844af09579b058313b069c0470a181c61c5",
       "generated": false
     },
     {
@@ -1960,7 +1960,7 @@
     },
     {
       "path": "typescript/tsup.config.ts",
-      "sha256": "9a086b7b970de220f1604f52c2ecd1b5a9ee66d053fff28a5b734d50f43dfd2a",
+      "sha256": "22da20e1e6d1362ee67803b6529c36b903587d5489d63d207207963653b6bdc0",
       "generated": false
     },
     {
