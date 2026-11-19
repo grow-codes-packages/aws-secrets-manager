@@ -105,7 +105,9 @@ func (h *hookedHTTPClient) Do(req *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 	rid := requestID(res.Header)
-	if res.StatusCode >= 400 {
+	// Only Secrets Manager (AWS JSON 1.1, X-Amz-Target) responses: STS shares this client and
+	// speaks the XML query protocol, so its error bodies must stay untouched.
+	if res.StatusCode >= 400 && op != "" {
 		normalizeXMLError(res)
 	}
 	h.hooks.response(ResponseInfo{Method: req.Method, URL: safeURL, Status: res.StatusCode, Duration: h.now().Sub(start), Attempt: attempt, RequestID: rid})
@@ -194,6 +196,8 @@ func normalizeXMLError(res *http.Response) {
 		Message string `xml:"Errors>Error>Message"`
 		Code2   string `xml:"Error>Code"`
 		Msg2    string `xml:"Error>Message"`
+		Code3   string `xml:"Code"`
+		Msg3    string `xml:"Message"`
 	}
 	trimmed := bytes.TrimSpace(raw)
 	if len(trimmed) == 0 || trimmed[0] != '<' || xml.Unmarshal(trimmed, &doc) != nil {
@@ -203,6 +207,9 @@ func normalizeXMLError(res *http.Response) {
 	code, msg := doc.Code, doc.Message
 	if code == "" {
 		code, msg = doc.Code2, doc.Msg2
+	}
+	if code == "" {
+		code, msg = doc.Code3, doc.Msg3
 	}
 	if code == "" {
 		restore(raw)
