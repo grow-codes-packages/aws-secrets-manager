@@ -1,10 +1,16 @@
 package awssecretsmanager
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"encoding/xml"
 	"errors"
+	"io"
 	"log/slog"
 	"net/http"
+	"strconv"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -99,6 +105,9 @@ func (h *hookedHTTPClient) Do(req *http.Request) (*http.Response, error) {
 		return nil, err
 	}
 	rid := requestID(res.Header)
+	if res.StatusCode >= 400 {
+		normalizeXMLError(res)
+	}
 	h.hooks.response(ResponseInfo{Method: req.Method, URL: safeURL, Status: res.StatusCode, Duration: h.now().Sub(start), Attempt: attempt, RequestID: rid})
 	if res.StatusCode >= 400 {
 		willRetry := attempt < h.maxAttempts && (res.StatusCode >= 500 || res.StatusCode == http.StatusTooManyRequests)
@@ -157,3 +166,50 @@ func newRetryer(p RetryPolicy, now func() time.Time) aws.Retryer {
 
 // noRetry disables retries for one call (health).
 func noRetry(o *secretsmanager.Options) { o.Retryer = aws.NopRetryer{} }
+
+// maxXMLErrorBody bounds how much of a non-JSON error body is read.
+const maxXMLErrorBody = 64 << 10
+
+// normalizeXMLError rewrites an XML error body (Moto answers IAM/auth failures
+// with a query-protocol <ErrorResponse>) into the AWS JSON 1.1 error shape, so
+// the SDK reports the real error code instead of a JSON decode failure. Bodies
+// that are not XML errors are restored unchanged.
+func normalizeXMLError(res *http.Response) {
+	if res.Body == nil || strings.Contains(res.Header.Get("Content-Type"), "json") {
+		return
+	}
+	raw, err := io.ReadAll(io.LimitReader(res.Body, maxXMLErrorBody))
+	_ = res.Body.Close()
+	restore := func(b []byte) {
+		res.Body = io.NopCloser(bytes.NewReader(b))
+		res.ContentLength = int64(len(b))
+		res.Header.Set("Content-Length", strconv.Itoa(len(b)))
+	}
+	if err != nil {
+		restore(raw)
+		return
+	}
+	var doc struct {
+		Code    string `xml:"Errors>Error>Code"`
+		Message string `xml:"Errors>Error>Message"`
+		Code2   string `xml:"Error>Code"`
+		Msg2    string `xml:"Error>Message"`
+	}
+	trimmed := bytes.TrimSpace(raw)
+	if len(trimmed) == 0 || trimmed[0] != '<' || xml.Unmarshal(trimmed, &doc) != nil {
+		restore(raw)
+		return
+	}
+	code, msg := doc.Code, doc.Message
+	if code == "" {
+		code, msg = doc.Code2, doc.Msg2
+	}
+	if code == "" {
+		restore(raw)
+		return
+	}
+	body, _ := json.Marshal(map[string]string{"__type": code, "message": msg})
+	res.Header.Set("Content-Type", "application/x-amz-json-1.1")
+	res.Header.Set("X-Amzn-Errortype", code)
+	restore(body)
+}
