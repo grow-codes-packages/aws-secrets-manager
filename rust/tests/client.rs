@@ -350,7 +350,10 @@ async fn core_hooks_and_useragent() {
     let req = &server.received_requests().await.unwrap()[0];
     let ua = req.headers.get("user-agent").unwrap().to_str().unwrap();
     assert!(
-        ua.contains("grow-codes-aws-secrets-manager/0.1.0 (rust) myapp/2"),
+        ua.contains(&format!(
+            "grow-codes-aws-secrets-manager/{} (rust) myapp/2",
+            env!("CARGO_PKG_VERSION")
+        )),
         "{ua}"
     );
     assert_eq!(req.headers.get("x-extra").unwrap(), "yes");
