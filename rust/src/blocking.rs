@@ -1,5 +1,6 @@
 // Service-owned (created from the sdk-kit 0.1.0 skeleton).
-//! Blocking wrapper (feature `blocking`). Each client owns a current-thread tokio runtime.
+//! Blocking wrapper (feature `blocking`). Each client owns a tokio runtime with one worker
+//! thread, so background work (watchers, retries' timers) keeps running between blocking calls.
 //!
 //! Do not use it from inside an async runtime (calls would panic); use the async client there.
 //! List calls return every page as a `Vec`. For the secrets provider and the cache use
@@ -24,7 +25,9 @@ pub struct AwsSecretsManagerClient {
 impl AwsSecretsManagerClient {
     /// Creates a client from a configuration.
     pub fn new(config: AwsSecretsManagerConfig) -> Result<Self> {
-        let runtime = tokio::runtime::Builder::new_current_thread()
+        let runtime = tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(1)
+            .thread_name("grow-aws-secrets-manager-blocking")
             .enable_all()
             .build()
             .map_err(|e| Error::config("cannot start the tokio runtime").with_source(e))?;
