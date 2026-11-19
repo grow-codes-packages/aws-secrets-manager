@@ -14,6 +14,9 @@ in the redacting `SecretValue` (`reveal()` / `revealBytes()` return the plain va
 Stage constants: `AWSCURRENT`, `AWSPREVIOUS`, `AWSPENDING` (Go `StageCurrent`, `StagePrevious`,
 `StagePending`). The end of a list is an absent, `null` **or empty** `NextToken`.
 
+Secrets Manager is **eventually consistent**: a read right after a write can see the state before
+it for a few seconds (see [Troubleshooting](../troubleshooting.md#reads-right-after-a-write-see-old-data)).
+
 === "TypeScript"
 
     ```ts

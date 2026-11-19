@@ -41,8 +41,28 @@ certificate without its key, `MAX_RETRIES` below 0.
 - `getSecretValue` → `CONFLICT`: the secret is scheduled for deletion (`InvalidRequestException`);
   `restoreSecret` it or wait for the recovery window to end. The provider reports such a secret as
   missing.
+- `getSecretValue` right after a **forced** delete (`forceDeleteWithoutRecovery` / `permanent: true`)
+  can also return `CONFLICT` ("marked for deletion") for a few seconds before it becomes
+  `NOT_FOUND`.
 - `createSecret` → `CONFLICT`: the name exists, possibly in its recovery window. Use
   `forceDeleteWithoutRecovery` / `permanent: true` for names you want to re-create at once.
+
+## Reads right after a write see old data
+
+AWS Secrets Manager is eventually consistent; these are AWS behaviours, not SDK bugs. Observed
+against a live account:
+
+- `getSecretValue(id, {versionStage: "AWSPREVIOUS"})` right after `putSecretValue` can return
+  `NOT_FOUND` until the stage labels have moved.
+- `describeSecret` and the AWS secret cache's `refreshNow` can briefly still return the previous
+  version (`versionIdsToStages`, value).
+- `listSecrets` misses secrets that were just created or just scheduled for deletion for about
+  3 seconds.
+- Right after a forced delete, `getSecretValue` maps to `CONFLICT` ("marked for deletion"), see
+  above.
+
+Code that writes and then reads at once (tests, rotation steps) should retry the read for a few
+seconds, or use the values the write call returned (`versionId`, `versionStages`).
 
 ## TLS errors
 
