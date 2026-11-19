@@ -37,12 +37,12 @@ dependencies = [
 # boto3 release. Move both lines together when aioboto3 moves.
 async = [
   "aioboto3>=15.5,<16",
-  "boto3>=1.40.46,<1.40.62",
+  "boto3>=1.40.46,<1.44.2",
 ]
 # Every optional runtime extra (used by `make license`).
 all = [
   "aioboto3>=15.5,<16",
-  "boto3>=1.40.46,<1.40.62",
+  "boto3>=1.40.46,<1.44.2",
 ]
 dev = [
   "build>=1.2",
