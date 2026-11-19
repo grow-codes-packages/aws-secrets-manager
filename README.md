@@ -693,7 +693,7 @@ Licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE) 
 ## Trademarks and disclaimer
 
 This is an independent, community-maintained project. It is **not affiliated with, endorsed or
-sponsored by Amazon.com, Inc. or its affiliates**. Amazon Web Services, AWS and AWS Secrets Manager
+sponsored by its owner (Amazon.com, Inc. or its affiliates)**. Amazon Web Services, AWS and AWS Secrets Manager
 are trademarks of Amazon.com, Inc. or its affiliates; they are used here only to name the service
 this SDK connects to. AWS Secrets Manager is a proprietary managed service; this SDK contains no
 AWS service code and talks to it only through the official, Apache-2.0 licensed AWS SDKs.

@@ -40,5 +40,5 @@ Start with [Install](install.md) and the [Quickstart](quickstart.md).
 
 !!! note "Independent project"
     This SDK is made by [Grow Codes](https://grow.codes). AWS Secrets Manager is a trademark of
-    Amazon.com, Inc. or its affiliates. This project is not affiliated with or endorsed by Amazon.com, Inc. or its affiliates. See
+    its owner (Amazon.com, Inc. or its affiliates); this project is not affiliated with or endorsed by it. See
     [License & disclaimer](license.md).

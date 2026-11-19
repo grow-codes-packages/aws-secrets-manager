@@ -32,7 +32,7 @@ def test_async_core(env: dict[str, str]) -> None:
         async with async_core_client(
             env,
             access_key_id="AKIAUNKNOWNKEY000000",
-            secret_access_key="wrong-secret-for-integration-0123456789",  # noqa: S106 - deliberately wrong
+            secret_access_key="wrong-secret-for-integration-0123456789",  # deliberately wrong
             retry=sdk.RetryPolicy(max_retries=0),
         ) as bad:
             with pytest.raises(sdk.AuthenticationError):
