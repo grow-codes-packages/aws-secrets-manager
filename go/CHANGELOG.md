@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/grow-codes-packages/aws-secrets-manager/compare/go/v0.1.0...go/v0.1.1) (2026-11-19)
+
+
+### Bug Fixes
+
+* sync aws-secrets-manager to sdk-kit 0.3.0 (GRO-1370) ([#13](https://github.com/grow-codes-packages/aws-secrets-manager/issues/13)) ([af41a2a](https://github.com/grow-codes-packages/aws-secrets-manager/commit/af41a2a879ae59be34ec654b2aa1b36a07d110f1))
+
 ## 0.1.0 (2026-11-19)
 
 
