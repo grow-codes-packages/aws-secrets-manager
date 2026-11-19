@@ -360,9 +360,8 @@ def test_context_resolve_and_close() -> None:
 
 
 def demo_server(server: MockServer) -> None:
-    server.defaults["/health"] = Reply(200, {"status": "ok"})
-    server.defaults["/v1/ping"] = Reply(200, {"pong": True})
-    server.defaults["/version"] = Reply(200, {"version": "1.0.0"})
+    # health and ping are a signed ListSecrets (POST /) on AWS
+    server.defaults["/"] = Reply(200, {"SecretList": []})
 
 
 @pytest.mark.parametrize("scenario_doc", r.pytest_params(categories=["core"]))
@@ -370,7 +369,7 @@ def test_core_scenarios_sync(server: MockServer, scenario_doc: dict[str, Any]) -
     demo_server(server)
     runner = r.ConformanceRunner(
         {"core": lambda c: sdk.AwsSecretsManagerClient(make_config(server.url, token="t-1234"))},
-        capabilities={"version"},
+        capabilities=set(),  # AWS exposes no server version
     )
     result = r.assert_scenario(runner, scenario_doc)
     assert result.status == "passed"

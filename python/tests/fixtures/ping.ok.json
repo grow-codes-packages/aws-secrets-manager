@@ -1,0 +1,61 @@
+{
+  "function": "ping",
+  "case": "ok",
+  "operation": "ListSecrets",
+  "recordedWith": "motoserver/moto:5.2.4 (IAM auth on), raw AWS JSON 1.1 via curl --aws-sigv4",
+  "request": {
+    "method": "POST",
+    "path": "/",
+    "headers": {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": "secretsmanager.ListSecrets"
+    },
+    "body": {
+      "MaxResults": 1
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "x-amzn-requestid": "bunlH8nMuidc9zDvrvfShh8CFqp4QkAunZtwXQ1TSus5c47Oe53I",
+      "content-type": "text/html; charset=utf-8",
+      "content-length": "622"
+    },
+    "body": {
+      "SecretList": [
+        {
+          "ARN": "arn:aws:secretsmanager:us-east-1:123456789012:secret:grow-bootstrap/seed-json-Arqqkb",
+          "Name": "grow-bootstrap/seed-json",
+          "LastChangedDate": 1795033093,
+          "LastAccessedDate": null,
+          "NextRotationDate": null,
+          "DeletedDate": null,
+          "CreatedDate": 1795033093,
+          "KmsKeyId": null,
+          "Tags": [
+            {
+              "Key": "grow:fixture",
+              "Value": "seed"
+            },
+            {
+              "Key": "kind",
+              "Value": "json"
+            }
+          ],
+          "Description": "Grow SDK bootstrap seed (JSON string)",
+          "VersionIdsToStages": {
+            "00000000-0000-4000-8000-000000000001": [
+              "AWSCURRENT"
+            ]
+          },
+          "SecretVersionsToStages": {
+            "00000000-0000-4000-8000-000000000001": [
+              "AWSCURRENT"
+            ]
+          }
+        }
+      ],
+      "NextToken": "1"
+    }
+  }
+}

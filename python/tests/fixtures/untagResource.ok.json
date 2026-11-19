@@ -1,0 +1,29 @@
+{
+  "function": "untagResource",
+  "case": "ok",
+  "operation": "UntagResource",
+  "recordedWith": "motoserver/moto:5.2.4 (IAM auth on), raw AWS JSON 1.1 via curl --aws-sigv4",
+  "request": {
+    "method": "POST",
+    "path": "/",
+    "headers": {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": "secretsmanager.UntagResource"
+    },
+    "body": {
+      "SecretId": "sdkv-0badc0de/app/db",
+      "TagKeys": [
+        "env"
+      ]
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "x-amzn-requestid": "G7Z4APOvF2aYIISx1LhEyJbLVKBhNFcgeeYdhZIZ8ypyJHEp4X6O",
+      "content-type": "text/html; charset=utf-8",
+      "content-length": "2"
+    },
+    "body": {}
+  }
+}
