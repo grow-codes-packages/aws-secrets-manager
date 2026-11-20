@@ -9,6 +9,9 @@ __all__ = ["SDK_NAME", "user_agent"]
 
 SDK_NAME = "grow-codes-aws-secrets-manager"
 
+PACKAGE_KEY = "aws-secrets-manager"
+"""Stack catalog key (value of ``GROW_SECRETS_PROVIDER`` / ``GROW_LOGGING_PROVIDER``)."""
+
 
 def user_agent(suffix: str | None = None) -> str:
     """``grow-codes-<key>/<version> (python)`` plus `` <suffix>`` when given."""
